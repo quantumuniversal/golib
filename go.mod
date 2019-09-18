@@ -1,6 +1,6 @@
 module github.com/quantumuniversal/golib
 
-go 1.13
+go 1.12
 
 require (
 	github.com/go-pg/pg v8.0.6+incompatible
