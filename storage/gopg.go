@@ -96,3 +96,19 @@ func (g *Gopg) Update(uid uuid.UUID) error {
 
 	return nil
 }
+
+func (g *Gopg) Delete(condition string, param interface{}) error {
+	db := pg.Connect(&g.Auth)
+	defer db.Close()
+
+	orm.SetTableNameInflector(func(s string) string {
+		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
+	})
+
+	_, err := db.Model(g.Data).Where(condition, param).Delete()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
