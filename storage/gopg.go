@@ -22,11 +22,21 @@ func (g *Gopg) SelectMany() error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
+	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
+
+	if err != nil {
+		return err
+	}
+
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
 	})
 
-	err := db.Model(g.Data).Select()
+	db.CreateTable(g.Model, &orm.CreateTableOptions{
+		Temp: false,
+	})
+
+	err = db.Model(g.Data).Select()
 	if err != nil {
 		return err
 	}
@@ -39,11 +49,21 @@ func (g *Gopg) SelectOne(condition string, param interface{}) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
+	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
+
+	if err != nil {
+		return err
+	}
+
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
 	})
 
-	err := db.Model(g.Data).Where(condition, param).Select()
+	db.CreateTable(g.Model, &orm.CreateTableOptions{
+		Temp: false,
+	})
+
+	err = db.Model(g.Data).Where(condition, param).Select()
 	if err != nil {
 		return err
 	}
@@ -84,11 +104,21 @@ func (g *Gopg) Update(uid uuid.UUID) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
+	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
+
+	if err != nil {
+		return err
+	}
+
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
 	})
 
-	_, err := db.Model(g.Data).Where("id = ?", uid).Update()
+	db.CreateTable(g.Model, &orm.CreateTableOptions{
+		Temp: false,
+	})
+
+	_, err = db.Model(g.Data).Where("id = ?", uid).Update()
 
 	if err != nil {
 		return err
@@ -97,15 +127,26 @@ func (g *Gopg) Update(uid uuid.UUID) error {
 	return nil
 }
 
+// Delete --
 func (g *Gopg) Delete(condition string, param interface{}) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
+
+	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
+
+	if err != nil {
+		return err
+	}
 
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
 	})
 
-	_, err := db.Model(g.Data).Where(condition, param).Delete()
+	db.CreateTable(g.Model, &orm.CreateTableOptions{
+		Temp: false,
+	})
+
+	_, err = db.Model(g.Data).Where(condition, param).Delete()
 	if err != nil {
 		return err
 	}
