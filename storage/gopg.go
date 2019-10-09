@@ -44,8 +44,8 @@ func (g *Gopg) SelectMany() error {
 	return nil
 }
 
-// SelectOne --
-func (g *Gopg) SelectOne(condition string, param interface{}) error {
+// SelectWhere --
+func (g *Gopg) SelectWhere(condition string, param interface{}) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
