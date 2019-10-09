@@ -6,6 +6,7 @@ import (
 	"github.com/go-pg/pg"
 	"github.com/go-pg/pg/orm"
 	"github.com/google/uuid"
+	"github.com/jinzhu/inflection"
 )
 
 // Gopg --
@@ -83,7 +84,7 @@ func (g *Gopg) Select() error {
 	}
 
 	orm.SetTableNameInflector(func(s string) string {
-		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
+		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
 	db.CreateTable(g.Model, &orm.CreateTableOptions{
@@ -113,7 +114,7 @@ func (g *Gopg) SelectCount() (int, error) {
 	}
 
 	orm.SetTableNameInflector(func(s string) string {
-		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
+		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
 	db.CreateTable(g.Model, &orm.CreateTableOptions{
@@ -143,7 +144,7 @@ func (g *Gopg) Insert() error {
 	}
 
 	orm.SetTableNameInflector(func(s string) string {
-		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
+		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
 	db.CreateTable(g.Model, &orm.CreateTableOptions{
@@ -171,7 +172,7 @@ func (g *Gopg) Update(uid uuid.UUID) error {
 	}
 
 	orm.SetTableNameInflector(func(s string) string {
-		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
+		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
 	db.CreateTable(g.Model, &orm.CreateTableOptions{
@@ -199,7 +200,7 @@ func (g *Gopg) Delete(condition string, param interface{}) error {
 	}
 
 	orm.SetTableNameInflector(func(s string) string {
-		return fmt.Sprintf("%s.%s", g.Schema, g.TableName)
+		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
 	db.CreateTable(g.Model, &orm.CreateTableOptions{
