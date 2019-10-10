@@ -72,8 +72,8 @@ func (g *Gopg) prepareStatement(q *orm.Query) *orm.Query {
 	return q
 }
 
-// Select --
-func (g *Gopg) Select() error {
+// Init --
+func (g *Gopg) Init(models []interface{}) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
@@ -83,17 +83,30 @@ func (g *Gopg) Select() error {
 		return err
 	}
 
+	for _, model := range models {
+		orm.SetTableNameInflector(func(s string) string {
+			return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
+		})
+		db.CreateTable(model, &orm.CreateTableOptions{
+			Temp: false,
+		})
+	}
+
+	return nil
+}
+
+// Select --
+func (g *Gopg) Select() error {
+	db := pg.Connect(&g.Auth)
+	defer db.Close()
+
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
-	db.CreateTable(g.Model, &orm.CreateTableOptions{
-		Temp: false,
-	})
-
 	q := g.prepareStatement(db.Model(g.Data))
 
-	err = q.Select()
+	err := q.Select()
 
 	if err != nil {
 		return err
@@ -107,18 +120,8 @@ func (g *Gopg) SelectCount() (int, error) {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
-	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
-
-	if err != nil {
-		return 0, err
-	}
-
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
-	})
-
-	db.CreateTable(g.Model, &orm.CreateTableOptions{
-		Temp: false,
 	})
 
 	q := g.prepareStatement(db.Model(g.Data))
@@ -137,21 +140,11 @@ func (g *Gopg) Insert() error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
-	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
-
-	if err != nil {
-		return err
-	}
-
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
-	db.CreateTable(g.Model, &orm.CreateTableOptions{
-		Temp: false,
-	})
-
-	err = db.Insert(g.Data)
+	err := db.Insert(g.Data)
 
 	if err != nil {
 		return err
@@ -165,21 +158,11 @@ func (g *Gopg) Update(uid uuid.UUID) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
-	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
-
-	if err != nil {
-		return err
-	}
-
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
-	db.CreateTable(g.Model, &orm.CreateTableOptions{
-		Temp: false,
-	})
-
-	_, err = db.Model(g.Data).Where("id = ?", uid).Update()
+	_, err := db.Model(g.Data).Where("id = ?", uid).Update()
 
 	if err != nil {
 		return err
@@ -193,21 +176,11 @@ func (g *Gopg) Delete(condition string, param interface{}) error {
 	db := pg.Connect(&g.Auth)
 	defer db.Close()
 
-	_, err := db.Exec(fmt.Sprintf("CREATE Schema IF NOT EXISTS \"%s\";", g.Schema))
-
-	if err != nil {
-		return err
-	}
-
 	orm.SetTableNameInflector(func(s string) string {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
-	db.CreateTable(g.Model, &orm.CreateTableOptions{
-		Temp: false,
-	})
-
-	_, err = db.Model(g.Data).Where(condition, param).Delete()
+	_, err := db.Model(g.Data).Where(condition, param).Delete()
 	if err != nil {
 		return err
 	}
