@@ -25,7 +25,7 @@ type Query struct {
 	ColumnExpr string // count(*) as column_count
 	Where      []Where
 	WhereOr    []Where
-	Relation   string
+	Relations  []string
 	Order      string
 	Limit      int
 }
@@ -45,8 +45,10 @@ func (g *Gopg) prepareStatement(q *orm.Query) *orm.Query {
 		q = q.ColumnExpr(g.Query.ColumnExpr)
 	}
 
-	if g.Query.Relation != "" {
-		q = q.Relation(g.Query.Relation)
+	if len(g.Query.Relations) > 0 {
+		for _, statement := range g.Query.Relations {
+			q = q.Relation(statement)
+		}
 	}
 
 	if len(g.Query.Where) > 0 {
