@@ -164,7 +164,7 @@ func (g *Gopg) Update(uid uuid.UUID) error {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
-	_, err := db.Model(g.Data).Where("id = ?", uid).Update()
+	err := db.Update(g.Data)
 
 	if err != nil {
 		return err
@@ -182,7 +182,7 @@ func (g *Gopg) Delete(condition string, param interface{}) error {
 		return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 	})
 
-	_, err := db.Model(g.Data).Where(condition, param).Delete()
+	err := db.Delete(g.Data)
 	if err != nil {
 		return err
 	}
