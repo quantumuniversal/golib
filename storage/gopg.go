@@ -19,17 +19,6 @@ type Gopg struct {
 	Data      interface{}
 }
 
-// Query --
-type Query struct {
-	Column     string
-	ColumnExpr string // count(*) as column_count
-	Where      []Where
-	WhereOr    []Where
-	Relations  []string
-	Order      string
-	Limit      int
-}
-
 // Where --
 type Where struct {
 	Condition string
@@ -63,6 +52,12 @@ func (g *Gopg) prepareStatement(q *orm.Query) *orm.Query {
 		}
 	}
 
+	if len(g.Query.WhereIn) > 0 {
+		for _, statement := range g.Query.WhereIn {
+			q = q.WhereIn(statement.Condition, statement.Param)
+		}
+	}
+
 	if g.Query.Order != "" {
 		q = q.Order(g.Query.Order)
 	}
@@ -90,7 +85,8 @@ func (g *Gopg) Init(models []interface{}) error {
 			return fmt.Sprintf("%s.%s", g.Schema, inflection.Plural(s))
 		})
 		db.CreateTable(model, &orm.CreateTableOptions{
-			Temp: false,
+			IfNotExists: true,
+			Temp:        false,
 		})
 	}
 
