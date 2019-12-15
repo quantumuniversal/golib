@@ -12,5 +12,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.11
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
+	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	mellium.im/sasl v0.2.1 // indirect
 )

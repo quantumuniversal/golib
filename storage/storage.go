@@ -1,5 +1,10 @@
 package storage
 
+import (
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+)
+
 // Query --
 type Query struct {
 	Column     string
@@ -10,4 +15,13 @@ type Query struct {
 	Relations  []string
 	Order      string
 	Limit      int
+}
+
+// MgoQuery --
+type MgoQuery struct {
+	Index mgo.Index
+	One   bool
+	Where bson.M
+	Sort  string
+	Limit int
 }
